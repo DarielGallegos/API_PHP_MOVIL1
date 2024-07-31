@@ -34,14 +34,36 @@ class Personas{
         $statement->bindParam(1, $this->nombres);
         $statement->bindParam(2, $this->apellido);
         $statement->bindParam(3, $this->direccion);
-        $statement->bindParam(4, $this->direccion);
-        $statement->bindParam(5, $this->direccion);
+        $statement->bindParam(4, $this->telefono);
+        $statement->bindParam(5, $this->foto);
         try{
             if($statement->execute()){
                 http_response_code(201);
-                echo json_encode(array("message" => "Se ha insertado con exito"));
+                echo json_encode(array(
+                    "status" => 200,
+                    "data" => "",
+                    "message" => "Se ha insertado con exito"
+                ));
             }
         }catch(Exception $ex){
+            echo json_encode(array("msg" => $ex->getMessage()));
+        }
+    }
+    public function getPersonaById(){
+        $query = "SELECT * FROM ".$this->table." WHERE id = ?";
+        $statement = $this->con->prepare($query);
+        $statement->bindParam(1, $this->id);
+        try{
+            $statement->execute();
+            http_response_code(200);
+            echo json_encode(
+                array(
+                    "status" => 200,
+                    "data" => $statement->fetch(PDO::FETCH_ASSOC),
+                    "message" => "Registro Encontrado"                
+                ));
+        }catch(Exception $ex){
+            http_response_code(400);
             echo json_encode(array("msg" => $ex->getMessage()));
         }
     }
@@ -55,7 +77,9 @@ class Personas{
         http_response_code(200);
         echo json_encode(
             array(
-                "data" => $statement->fetchAll(PDO::FETCH_ASSOC)
+                "status" => 200,
+                "data" => $statement->fetchAll(PDO::FETCH_ASSOC),
+                "message" => "Registros Encontrados"
             ));
         }catch(Exception $ex){
             http_response_code(400);
@@ -84,7 +108,11 @@ class Personas{
         try{
             if($statement->execute()){
                 http_response_code(200);
-                echo json_encode(array("message" => "Se ha actualizado con exito"));
+                echo json_encode(array(
+                    "status" => 200,
+                    "data" => "",
+                    "message" => "Se ha actualizado con exito"
+                ));
             }else{
                 http_response_code(400);
                 echo json_encode(array("message" => "No se ha podido actualizar"));
@@ -104,7 +132,11 @@ class Personas{
             try{
                 if($statement->execute()){
                     http_response_code(200);
-                    echo json_encode(array("message" => "Se ha eliminado con exito"));
+                    echo json_encode(array(
+                        "status" => 200,
+                        "data" => "",
+                        "message" => "Se ha eliminado con exito"
+                    ));
                 }else{
                     http_response_code(400);
                     echo json_encode(array("message" => "No se ha podido eliminar"));
